@@ -18,7 +18,7 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentType;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.component.type.ContainerComponent;
@@ -101,10 +101,10 @@ public class InventoryUtils
      * @return (return value)
      * @param <T> DataComponentType extendable
      */
-    public static <T> boolean areNbtEqualIgnoreKeys(@Nonnull ComponentMap tag1, @Nonnull ComponentMap tag2, @Nullable DataComponentType<T> type, @Nullable Set<DataComponentType<T>> ignoredKeys)
+    public static <T> boolean areNbtEqualIgnoreKeys(@Nonnull ComponentMap tag1, @Nonnull ComponentMap tag2, @Nullable ComponentType<T> type, @Nullable Set<ComponentType<T>> ignoredKeys)
     {
-        Set<DataComponentType<?>> keys1;
-        Set<DataComponentType<?>> keys2;
+        Set<ComponentType<?>> keys1;
+        Set<ComponentType<?>> keys2;
 
         keys1 = tag1.getTypes();
         keys2 = tag2.getTypes();
@@ -122,7 +122,7 @@ public class InventoryUtils
 
         if (type == null)
         {
-            for (DataComponentType<?> key : keys1)
+            for (ComponentType<?> key : keys1)
             {
                 if (Objects.equals(tag1.get(key), tag2.get(key)) == false)
                 {
