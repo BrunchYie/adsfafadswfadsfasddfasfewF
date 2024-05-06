@@ -184,26 +184,33 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * Sends the Payload to the server using the Fabric-API interface.
      * -
      * @param payload (The Payload to send)
+     * @return (true/false --> for error control)
      */
-    default void sendPlayPayload(@Nonnull T payload)
+    default boolean sendPlayPayload(@Nonnull T payload)
     {
-        if (payload.getId().id().equals(this.getPayloadChannel()) && this.isPlayRegistered(this.getPayloadChannel()) &&
-            ClientPlayNetworking.canSend(payload.getId()))
+        if (payload.getId().id().equals(this.getPayloadChannel()) && this.isPlayRegistered(this.getPayloadChannel()))
         {
-            ClientPlayNetworking.send(payload);
+            if (ClientPlayNetworking.canSend(payload.getId()))
+            {
+                ClientPlayNetworking.send(payload);
+                return true;
+            }
         }
         else
         {
             MaLiLib.logger.warn("sendPlayPayload: [Fabric-API] error sending payload for channel: {}, check if channel is registered", payload.getId().id().toString());
         }
+
+        return false;
     }
 
     /**
      * Sends the Payload to the player using the ClientPlayNetworkHandler interface.
      * @param handler (ClientPlayNetworkHandler)
      * @param payload (The Payload to send)
+     * @return (true/false --> for error control)
      */
-    default void sendPlayPayload(@Nonnull ClientPlayNetworkHandler handler, @Nonnull T payload)
+    default boolean sendPlayPayload(@Nonnull ClientPlayNetworkHandler handler, @Nonnull T payload)
     {
         if (payload.getId().id().equals(this.getPayloadChannel()) && this.isPlayRegistered(this.getPayloadChannel()))
         {
@@ -212,15 +219,14 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
             if (handler.accepts(packet))
             {
                 handler.sendPacket(packet);
-            }
-            else
-            {
-                MaLiLib.logger.warn("sendPlayPayload: [NetworkHandler] error sending payload for channel: {}, network handler currently does not accept packets", payload.getId().id().toString());
+                return true;
             }
         }
         else
         {
             MaLiLib.logger.warn("sendPlayPayload: [NetworkHandler] error sending payload for channel: {}, check if channel is registered", payload.getId().id().toString());
         }
+
+        return false;
     }
 }
