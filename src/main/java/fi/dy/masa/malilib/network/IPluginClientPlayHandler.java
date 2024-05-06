@@ -150,7 +150,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
     default void receivePlayPayload(T payload, ClientPlayNetworkHandler handler, CallbackInfo ci) {}
 
     /**
-     * Payload Decoder wrapper function.
+     * Payload Decoder wrapper function [OPTIONAL]
      * Implements how the data is processed after being decoded from the receivePlayPayload().
      * You can ignore these and implement your own helper class/methods.
      * These are provided as an example, and can be used in your HANDLER directly.
@@ -167,7 +167,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
     default <D, E, F, G, H> void decodeObject(Identifier channel, D data1, E data2, F data3, G data4, H data5) {}
 
     /**
-     * Payload Encoder wrapper function.
+     * Payload Encoder wrapper function [OPTIONAL]
      * Implements how to encode() your Payload, then forward complete Payload to sendPlayPayload().
      * -
      * @param data (Data Codec)
