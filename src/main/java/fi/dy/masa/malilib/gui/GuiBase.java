@@ -81,6 +81,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     protected GuiBase()
     {
         super(ScreenTexts.EMPTY);
+        this.client = mc;
     }
 
     public GuiBase setParent(@Nullable Screen parent)
