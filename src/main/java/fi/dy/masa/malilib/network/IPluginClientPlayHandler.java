@@ -161,10 +161,6 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
     default void decodeNbtCompound(Identifier channel, NbtCompound data) {}
     default void decodeByteBuf(Identifier channel, MaLiLibBuf data) {}
     default <D> void decodeObject(Identifier channel, D data1) {}
-    default <D, E> void decodeObject(Identifier channel, D data1, E data2) {}
-    default <D, E, F> void decodeObject(Identifier channel, D data1, E data2, F data3) {}
-    default <D, E, F, G> void decodeObject(Identifier channel, D data1, E data2, F data3, G data4) {}
-    default <D, E, F, G, H> void decodeObject(Identifier channel, D data1, E data2, F data3, G data4, H data5) {}
 
     /**
      * Payload Encoder wrapper function [OPTIONAL]
@@ -175,10 +171,6 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
     default void encodeNbtCompound(NbtCompound data) {}
     default void encodeByteBuf(MaLiLibBuf data) {}
     default <D> void encodeObject(D data1) {}
-    default <D, E> void encodeObject(D data1, E data2) {}
-    default <D, E, F> void encodeObject(D data1, E data2, F data3) {}
-    default <D, E, F, G> void encodeObject(D data1, E data2, F data3, G data4) {}
-    default <D, E, F, G, H> void encodeObject(D data1, E data2, F data3, G data4, H data5) {}
 
     /**
      * Sends the Payload to the server using the Fabric-API interface.
