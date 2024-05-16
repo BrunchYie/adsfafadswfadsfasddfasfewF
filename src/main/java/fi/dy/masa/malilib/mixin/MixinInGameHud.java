@@ -23,6 +23,6 @@ public abstract class MixinInGameHud
     private void onGameOverlayPost(DrawContext context, class_9779 arg, CallbackInfo ci)
     {
         // FIXME class_9779 --> partialTicks ?
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(context, this.client, arg);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(context, this.client, arg.method_60637(false));
     }
 }
