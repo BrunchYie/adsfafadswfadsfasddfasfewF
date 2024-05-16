@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.joml.Matrix4f;
 
+import net.minecraft.class_9779;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
@@ -56,8 +57,9 @@ public class RenderEventHandler implements IRenderDispatcher
     /**
      * NOT PUBLIC API - DO NOT CALL
      */
-    public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks)
+    public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, class_9779 partialTicks)
     {
+        // FIXME
         mc.getProfiler().push("malilib_rendergameoverlaypost");
 
         if (this.overlayRenderers.isEmpty() == false)
