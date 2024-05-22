@@ -15,14 +15,11 @@ import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.class_9801;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.item.TooltipType;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -41,31 +38,35 @@ import fi.dy.masa.malilib.gui.GuiBase;
 
 public class InventoryOverlay
 {
-    public static final Identifier TEXTURE_BREWING_STAND    = new Identifier("textures/gui/container/brewing_stand.png");
-    public static final Identifier TEXTURE_DISPENSER        = new Identifier("textures/gui/container/dispenser.png");
-    public static final Identifier TEXTURE_DOUBLE_CHEST     = new Identifier("textures/gui/container/generic_54.png");
-    public static final Identifier TEXTURE_FURNACE          = new Identifier("textures/gui/container/furnace.png");
-    public static final Identifier TEXTURE_HOPPER           = new Identifier("textures/gui/container/hopper.png");
-    public static final Identifier TEXTURE_PLAYER_INV       = new Identifier("textures/gui/container/hopper.png");
-    public static final Identifier TEXTURE_SINGLE_CHEST     = new Identifier("textures/gui/container/shulker_box.png");
+    public static final Identifier TEXTURE_BREWING_STAND    = Identifier.splitOn("minecraft:textures/gui/container/brewing_stand.png", ':');
+    public static final Identifier TEXTURE_DISPENSER        = Identifier.splitOn("minecraft:textures/gui/container/dispenser.png", ':');
+    public static final Identifier TEXTURE_DOUBLE_CHEST     = Identifier.splitOn("minecraft:textures/gui/container/generic_54.png", ':');
+    public static final Identifier TEXTURE_FURNACE          = Identifier.splitOn("minecraft:textures/gui/container/furnace.png", ':');
+    public static final Identifier TEXTURE_HOPPER           = Identifier.splitOn("minecraft:textures/gui/container/hopper.png", ':');
+    public static final Identifier TEXTURE_PLAYER_INV       = Identifier.splitOn("minecraft:textures/gui/container/hopper.png", ':');
+    public static final Identifier TEXTURE_SINGLE_CHEST     = Identifier.splitOn("minecraft:textures/gui/container/shulker_box.png", ':');
 
     private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
     public static final InventoryProperties INV_PROPS_TEMP = new InventoryProperties();
 
     private static final Identifier[] EMPTY_SLOT_TEXTURES = new Identifier[] {
-            new Identifier("item/empty_armor_slot_boots"),
-            new Identifier("item/empty_armor_slot_leggings"),
-            new Identifier("item/empty_armor_slot_chestplate"),
-            new Identifier("item/empty_armor_slot_helmet") };
+            Identifier.splitOn("minecraft:item/empty_armor_slot_boots", ':'),
+            Identifier.splitOn("minecraft:item/empty_armor_slot_leggings", ':'),
+            Identifier.splitOn("minecraft:item/empty_armor_slot_chestplate", ':'),
+            Identifier.splitOn("minecraft:item/empty_armor_slot_helmet", ':') };
 
     public static void renderInventoryBackground(InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, MinecraftClient mc)
     {
         RenderUtils.setupBlend();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
+        //BufferBuilder buffer = tessellator.getBuffer();
+        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        // FIXME MeshData
+        class_9801 meshData;
+
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.applyModelViewMatrix();
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
         if (type == InventoryRenderType.FURNACE)
         {
@@ -153,7 +154,10 @@ public class InventoryOverlay
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
 
-        tessellator.draw();
+        //tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
+        meshData.close();
     }
 
     public static void renderInventoryBackground27(int x, int y, BufferBuilder buffer, MinecraftClient mc)
@@ -181,10 +185,14 @@ public class InventoryOverlay
         RenderUtils.color(1f, 1f, 1f, 1f);
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
+        //BufferBuilder buffer = tessellator.getBuffer();
+        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        // FIXME MeshData
+        class_9801 meshData;
+
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.applyModelViewMatrix();
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
         RenderUtils.bindTexture(TEXTURE_DISPENSER);
 
@@ -202,13 +210,16 @@ public class InventoryOverlay
         RenderUtils.drawTexturedRectBatched(x + 28, y + 2 * 18 + 7, 61, 16, 18, 18, buffer);
         RenderUtils.drawTexturedRectBatched(x + 28, y + 3 * 18 + 7, 61, 16, 18, 18, buffer);
 
-        tessellator.draw();
+        //tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
+        meshData.close();
 
         RenderUtils.bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
 
         if (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty())
         {
-            Identifier texture = new Identifier("minecraft:item/empty_armor_slot_shield");
+            Identifier texture = Identifier.splitOn("minecraft:item/empty_armor_slot_shield", ':');
             RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, drawContext);
         }
 

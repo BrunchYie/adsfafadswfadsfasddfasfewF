@@ -13,6 +13,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.class_9799;
+import net.minecraft.class_9801;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -50,8 +52,8 @@ import fi.dy.masa.malilib.util.PositionUtils.HitPart;
 
 public class RenderUtils
 {
-    public static final Identifier TEXTURE_MAP_BACKGROUND = new Identifier("textures/map/map_background.png");
-    public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = new Identifier("textures/map/map_background_checkerboard.png");
+    public static final Identifier TEXTURE_MAP_BACKGROUND = Identifier.splitOn("minecraft:textures/map/map_background.png", ':');
+    public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = Identifier.splitOn("minecraft:textures/map/map_background_checkerboard.png", ':');
 
     private static final LocalRandom RAND = new LocalRandom(0);
     //private static final Vec3d LIGHT0_POS = (new Vec3d( 0.2D, 1.0D, -0.7D)).normalize();
@@ -155,18 +157,23 @@ public class RenderUtils
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
+        //BufferBuilder buffer = tessellator.getBuffer();
+        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        // FIXME MeshData
+        class_9801 meshData;
 
         setupBlend();
 
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
-        buffer.vertex(x        , y         , zLevel).color(r, g, b, a).next();
-        buffer.vertex(x        , y + height, zLevel).color(r, g, b, a).next();
-        buffer.vertex(x + width, y + height, zLevel).color(r, g, b, a).next();
-        buffer.vertex(x + width, y         , zLevel).color(r, g, b, a).next();
+        buffer.vertex(x        , y         , zLevel).color(r, g, b, a);
+        buffer.vertex(x        , y + height, zLevel).color(r, g, b, a);
+        buffer.vertex(x + width, y + height, zLevel).color(r, g, b, a);
+        buffer.vertex(x + width, y         , zLevel).color(r, g, b, a);
 
-        tessellator.draw();
+        //tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
 
         RenderSystem.disableBlend();
     }
@@ -177,17 +184,23 @@ public class RenderUtils
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
+        //BufferBuilder buffer = tessellator.getBuffer();
+        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        // FIXME MeshData
+        class_9801 meshData;
 
         setupBlend();
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
-        buffer.vertex(x        , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth).next();
-        buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).next();
-        buffer.vertex(x + width, y         , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth).next();
-        buffer.vertex(x        , y         , zLevel).texture( u          * pixelWidth,  v           * pixelWidth).next();
+        buffer.vertex(x        , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth);
+        buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth);
+        buffer.vertex(x + width, y         , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth);
+        buffer.vertex(x        , y         , zLevel).texture( u          * pixelWidth,  v           * pixelWidth);
 
-        tessellator.draw();
+        //tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
+        meshData.close();
     }
 
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, BufferBuilder buffer)
@@ -199,10 +212,10 @@ public class RenderUtils
     {
         float pixelWidth = 0.00390625F;
 
-        buffer.vertex(x        , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth).next();
-        buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).next();
-        buffer.vertex(x + width, y         , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth).next();
-        buffer.vertex(x        , y         , zLevel).texture( u          * pixelWidth,  v           * pixelWidth).next();
+        buffer.vertex(x        , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth);
+        buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth);
+        buffer.vertex(x + width, y         , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth);
+        buffer.vertex(x        , y         , zLevel).texture( u          * pixelWidth,  v           * pixelWidth);
     }
 
     public static void drawHoverText(int x, int y, List<String> textLines, DrawContext drawContext)
@@ -252,7 +265,7 @@ public class RenderUtils
             matrixStack.translate(0, 0, 300);
             RenderSystem.applyModelViewMatrix();
 
-            double zLevel = 300;
+            float zLevel = (float) 300;
             int borderColor = 0xF0100010;
             drawGradientRect(textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, zLevel, borderColor, borderColor);
             drawGradientRect(textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, zLevel, borderColor, borderColor);
@@ -283,7 +296,7 @@ public class RenderUtils
         }
     }
 
-    public static void drawGradientRect(int left, int top, int right, int bottom, double zLevel, int startColor, int endColor)
+    public static void drawGradientRect(float left, float top, float right, float bottom, float zLevel, int startColor, int endColor)
     {
         int sa = (startColor >> 24 & 0xFF);
         int sr = (startColor >> 16 & 0xFF);
@@ -300,15 +313,21 @@ public class RenderUtils
         RenderSystem.applyModelViewMatrix();
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        //BufferBuilder buffer = tessellator.getBuffer();
+        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        // FIXME MeshData
+        class_9801 meshData;
+        
+        buffer.vertex(right, top, zLevel).color(sr, sg, sb, sa);
+        buffer.vertex(left, top, zLevel).color(sr, sg, sb, sa);
+        buffer.vertex(left, bottom, zLevel).color(er, eg, eb, ea);
+        buffer.vertex(right, bottom, zLevel).color(er, eg, eb, ea);
 
-        buffer.vertex(right, top,    zLevel).color(sr, sg, sb, sa).next();
-        buffer.vertex(left,  top,    zLevel).color(sr, sg, sb, sa).next();
-        buffer.vertex(left,  bottom, zLevel).color(er, eg, eb, ea).next();
-        buffer.vertex(right, bottom, zLevel).color(er, eg, eb, ea).next();
-
-        tessellator.draw();
+        //tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
+        meshData.close();
 
         RenderSystem.disableBlend();
     }
@@ -507,12 +526,12 @@ public class RenderUtils
      */
     public static void drawBlockBoundingBoxSidesBatchedQuads(BlockPos pos, Color4f color, double expand, BufferBuilder buffer)
     {
-        double minX = pos.getX() - expand;
-        double minY = pos.getY() - expand;
-        double minZ = pos.getZ() - expand;
-        double maxX = pos.getX() + expand + 1;
-        double maxY = pos.getY() + expand + 1;
-        double maxZ = pos.getZ() + expand + 1;
+        float minX = (float) (pos.getX() - expand);
+        float minY = (float) (pos.getY() - expand);
+        float minZ = (float) (pos.getZ() - expand);
+        float maxX = (float) (pos.getX() + expand + 1);
+        float maxY = (float) (pos.getY() + expand + 1);
+        float maxZ = (float) (pos.getZ() + expand + 1);
 
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
     }
@@ -536,12 +555,12 @@ public class RenderUtils
      */
     public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Vec3d cameraPos, Color4f color, double expand, BufferBuilder buffer)
     {
-        double minX = pos.getX() - expand - cameraPos.x;
-        double minY = pos.getY() - expand - cameraPos.y;
-        double minZ = pos.getZ() - expand - cameraPos.z;
-        double maxX = pos.getX() + expand - cameraPos.x + 1;
-        double maxY = pos.getY() + expand - cameraPos.y + 1;
-        double maxZ = pos.getZ() + expand - cameraPos.z + 1;
+        float minX = (float) (pos.getX() - expand - cameraPos.x);
+        float minY = (float) (pos.getY() - expand - cameraPos.y);
+        float minZ = (float) (pos.getZ() - expand - cameraPos.z);
+        float maxX = (float) (pos.getX() + expand - cameraPos.x + 1);
+        float maxY = (float) (pos.getY() + expand - cameraPos.y + 1);
+        float maxZ = (float) (pos.getZ() + expand - cameraPos.z + 1);
 
         drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
     }
@@ -549,7 +568,7 @@ public class RenderUtils
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
      */
-    public static void drawBoxAllSidesBatchedQuads(double minX, double minY, double minZ, double maxX, double maxY, double maxZ,
+    public static void drawBoxAllSidesBatchedQuads(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
             Color4f color, BufferBuilder buffer)
     {
         drawBoxHorizontalSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
@@ -586,12 +605,12 @@ public class RenderUtils
      */
     public static void drawBoxWithEdgesBatched(BlockPos posMin, BlockPos posMax, Vec3d cameraPos, Color4f colorLines, Color4f colorSides, BufferBuilder bufferQuads, BufferBuilder bufferLines)
     {
-        final double x1 = posMin.getX() - cameraPos.x;
-        final double y1 = posMin.getY() - cameraPos.y;
-        final double z1 = posMin.getZ() - cameraPos.z;
-        final double x2 = posMax.getX() + 1 - cameraPos.x;
-        final double y2 = posMax.getY() + 1 - cameraPos.y;
-        final double z2 = posMax.getZ() + 1 - cameraPos.z;
+        final float x1 = (float) (posMin.getX() - cameraPos.x);
+        final float y1 = (float) (posMin.getY() - cameraPos.y);
+        final float z1 = (float) (posMin.getZ() - cameraPos.z);
+        final float x2 = (float) (posMax.getX() + 1 - cameraPos.x);
+        final float y2 = (float) (posMax.getY() + 1 - cameraPos.y);
+        final float z2 = (float) (posMax.getZ() + 1 - cameraPos.z);
 
         fi.dy.masa.malilib.render.RenderUtils.drawBoxAllSidesBatchedQuads(x1, y1, z1, x2, y2, z2, colorSides, bufferQuads);
         fi.dy.masa.malilib.render.RenderUtils.drawBoxAllEdgesBatchedLines(x1, y1, z1, x2, y2, z2, colorLines, bufferLines);
@@ -600,113 +619,113 @@ public class RenderUtils
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
      */
-    public static void drawBoxHorizontalSidesBatchedQuads(double minX, double minY, double minZ, double maxX, double maxY, double maxZ,
+    public static void drawBoxHorizontalSidesBatchedQuads(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
             Color4f color, BufferBuilder buffer)
     {
         // West side
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
 
         // East side
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
 
         // North side
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
 
         // South side
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
     }
 
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
      */
-    public static void drawBoxTopBatchedQuads(double minX, double minZ, double maxX, double maxY, double maxZ, Color4f color, BufferBuilder buffer)
+    public static void drawBoxTopBatchedQuads(float minX, float minZ, float maxX, float maxY, float maxZ, Color4f color, BufferBuilder buffer)
     {
         // Top side
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
     }
 
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
      */
-    public static void drawBoxBottomBatchedQuads(double minX, double minY, double minZ, double maxX, double maxZ, Color4f color, BufferBuilder buffer)
+    public static void drawBoxBottomBatchedQuads(float minX, float minY, float minZ, float maxX, float maxZ, Color4f color, BufferBuilder buffer)
     {
         // Bottom side
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
     }
 
     /**
      * Assumes a BufferBuilder in GL_LINES mode has been initialized
      */
-    public static void drawBoxAllEdgesBatchedLines(double minX, double minY, double minZ, double maxX, double maxY, double maxZ,
+    public static void drawBoxAllEdgesBatchedLines(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
             Color4f color, BufferBuilder buffer)
     {
         // West side
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
 
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
 
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
 
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
 
         // East side
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
 
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
 
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
 
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
 
         // North side (don't repeat the vertical lines that are done by the east/west sides)
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
 
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
 
         // South side (don't repeat the vertical lines that are done by the east/west sides)
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
 
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).next();
+        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
     }
 
     public static void drawBox(IntBoundingBox bb, Vec3d cameraPos, Color4f color, BufferBuilder bufferQuads, BufferBuilder bufferLines)
     {
-        double minX = bb.minX - cameraPos.x;
-        double minY = bb.minY - cameraPos.y;
-        double minZ = bb.minZ - cameraPos.z;
-        double maxX = bb.maxX + 1 - cameraPos.x;
-        double maxY = bb.maxY + 1 - cameraPos.y;
-        double maxZ = bb.maxZ + 1 - cameraPos.z;
+        float minX = (float) (bb.minX - cameraPos.x);
+        float minY = (float) (bb.minY - cameraPos.y);
+        float minZ = (float) (bb.minZ - cameraPos.z);
+        float maxX = (float) (bb.maxX + 1 - cameraPos.x);
+        float maxY = (float) (bb.maxY + 1 - cameraPos.y);
+        float maxZ = (float) (bb.maxZ + 1 - cameraPos.z);
 
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, bufferQuads);
         drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, bufferLines);
@@ -756,7 +775,10 @@ public class RenderUtils
 
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
+        //BufferBuilder buffer = tessellator.getBuffer();
+        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        // FIXME MeshData
+        class_9801 meshData;
         int maxLineLen = 0;
 
         for (String line : text)
@@ -777,12 +799,15 @@ public class RenderUtils
             RenderSystem.disableDepthTest();
         }
 
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        buffer.vertex(-strLenHalf - 1,          -1, 0.0D).color(bgr, bgg, bgb, bga).next();
-        buffer.vertex(-strLenHalf - 1,  textHeight, 0.0D).color(bgr, bgg, bgb, bga).next();
-        buffer.vertex( strLenHalf    ,  textHeight, 0.0D).color(bgr, bgg, bgb, bga).next();
-        buffer.vertex( strLenHalf    ,          -1, 0.0D).color(bgr, bgg, bgb, bga).next();
-        tessellator.draw();
+        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        buffer.vertex((float) (-strLenHalf - 1), (float) -1, 0.0F).color(bgr, bgg, bgb, bga);
+        buffer.vertex((float) (-strLenHalf - 1), (float) textHeight, 0.0F).color(bgr, bgg, bgb, bga);
+        buffer.vertex((float) strLenHalf, (float) textHeight, 0.0F).color(bgr, bgg, bgb, bga);
+        buffer.vertex((float) strLenHalf, (float) -1, 0.0F).color(bgr, bgg, bgb, bga);
+        //tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
+        meshData.close();
 
         int textY = 0;
 
@@ -794,6 +819,8 @@ public class RenderUtils
         }
 
         Matrix4f modelMatrix = new Matrix4f();
+        // FIXME ByteBufferBuilder --> check size ?
+        class_9799 byteBufferBuilder = new class_9799((int) (x * y * z * 2));
         modelMatrix.identity();
 
         for (String line : text)
@@ -802,14 +829,16 @@ public class RenderUtils
             {
                 RenderSystem.depthMask(false);
                 RenderSystem.disableDepthTest();
-                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(buffer);
+                //VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(buffer);
+                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(byteBufferBuilder);
                 textRenderer.draw(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFF), false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
                 immediate.draw();
                 RenderSystem.enableDepthTest();
                 RenderSystem.depthMask(true);
             }
 
-            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(buffer);
+            //VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(buffer);
+            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(byteBufferBuilder);
             textRenderer.draw(line, -strLenHalf, textY, textColor, false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
             immediate.draw();
             textY += textRenderer.fontHeight;
@@ -834,9 +863,9 @@ public class RenderUtils
         HitPart part = PositionUtils.getHitPart(side, playerFacing, pos, hitVec);
         Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
 
-        double x = pos.getX() + 0.5d - cameraPos.x;
-        double y = pos.getY() + 0.5d - cameraPos.y;
-        double z = pos.getZ() + 0.5d - cameraPos.z;
+        double x = (pos.getX() + 0.5d - cameraPos.x);
+        double y = (pos.getY() + 0.5d - cameraPos.y);
+        double z = (pos.getZ() + 0.5d - cameraPos.z);
 
         Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
         global4fStack.pushMatrix();
@@ -846,7 +875,10 @@ public class RenderUtils
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
+        //BufferBuilder buffer = tessellator.getBuffer();
+        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        // FIXME MeshData
+        class_9801 meshData;
         int quadAlpha = (int) (0.18f * 255f);
         int hr = (int) (color.r * 255f);
         int hg = (int) (color.g * 255f);
@@ -854,81 +886,91 @@ public class RenderUtils
         int ha = (int) (color.a * 255f);
         int c = 255;
 
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         // White full block background
-        buffer.vertex(x - 0.5, y - 0.5, z).color(c, c, c, quadAlpha).next();
-        buffer.vertex(x + 0.5, y - 0.5, z).color(c, c, c, quadAlpha).next();
-        buffer.vertex(x + 0.5, y + 0.5, z).color(c, c, c, quadAlpha).next();
-        buffer.vertex(x - 0.5, y + 0.5, z).color(c, c, c, quadAlpha).next();
+        buffer.vertex((float) (x - 0.5), (float) (y - 0.5), (float) z).color(c, c, c, quadAlpha);
+        buffer.vertex((float) (x + 0.5), (float) (y - 0.5), (float) z).color(c, c, c, quadAlpha);
+        buffer.vertex((float) (x + 0.5), (float) (y + 0.5), (float) z).color(c, c, c, quadAlpha);
+        buffer.vertex((float) (x - 0.5), (float) (y + 0.5), (float) z).color(c, c, c, quadAlpha);
 
         switch (part)
         {
             case CENTER:
-                buffer.vertex(x - 0.25, y - 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x + 0.25, y - 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x + 0.25, y + 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x - 0.25, y + 0.25, z).color(hr, hg, hb, ha).next();
+                buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
                 break;
             case LEFT:
-                buffer.vertex(x - 0.50, y - 0.50, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x - 0.25, y - 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x - 0.25, y + 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x - 0.50, y + 0.50, z).color(hr, hg, hb, ha).next();
+                buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x - 0.50), (float) (y + 0.50), (float) z).color(hr, hg, hb, ha);
                 break;
             case RIGHT:
-                buffer.vertex(x + 0.50, y - 0.50, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x + 0.25, y - 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x + 0.25, y + 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x + 0.50, y + 0.50, z).color(hr, hg, hb, ha).next();
+                buffer.vertex((float) (x + 0.50), (float) (y - 0.50), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(hr, hg, hb, ha);
                 break;
             case TOP:
-                buffer.vertex(x - 0.50, y + 0.50, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x - 0.25, y + 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x + 0.25, y + 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x + 0.50, y + 0.50, z).color(hr, hg, hb, ha).next();
+                buffer.vertex((float) (x - 0.50), (float) (y + 0.50), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(hr, hg, hb, ha);
                 break;
             case BOTTOM:
-                buffer.vertex(x - 0.50, y - 0.50, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x - 0.25, y - 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x + 0.25, y - 0.25, z).color(hr, hg, hb, ha).next();
-                buffer.vertex(x + 0.50, y - 0.50, z).color(hr, hg, hb, ha).next();
+                buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.vertex((float) (x + 0.50), (float) (y - 0.50), (float) z).color(hr, hg, hb, ha);
                 break;
             default:
         }
 
-        tessellator.draw();
+        //tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
 
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
 
-        buffer.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
+        //buffer.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
+        buffer = tessellator.method_60827(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
         // Middle small rectangle
-        buffer.vertex(x - 0.25, y - 0.25, z).color(c, c, c, c).next();
-        buffer.vertex(x + 0.25, y - 0.25, z).color(c, c, c, c).next();
-        buffer.vertex(x + 0.25, y + 0.25, z).color(c, c, c, c).next();
-        buffer.vertex(x - 0.25, y + 0.25, z).color(c, c, c, c).next();
-        buffer.vertex(x - 0.25, y - 0.25, z).color(c, c, c, c).next();
-        tessellator.draw();
+        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+        //tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
+        meshData.close();
 
-        buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        //buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        buffer = tessellator.method_60827(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         // Bottom left
-        buffer.vertex(x - 0.50, y - 0.50, z).color(c, c, c, c).next();
-        buffer.vertex(x - 0.25, y - 0.25, z).color(c, c, c, c).next();
+        buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
 
         // Top left
-        buffer.vertex(x - 0.50, y + 0.50, z).color(c, c, c, c).next();
-        buffer.vertex(x - 0.25, y + 0.25, z).color(c, c, c, c).next();
+        buffer.vertex((float) (x - 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
 
         // Bottom right
-        buffer.vertex(x + 0.50, y - 0.50, z).color(c, c, c, c).next();
-        buffer.vertex(x + 0.25, y - 0.25, z).color(c, c, c, c).next();
+        buffer.vertex((float) (x + 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
 
         // Top right
-        buffer.vertex(x + 0.50, y + 0.50, z).color(c, c, c, c).next();
-        buffer.vertex(x + 0.25, y + 0.25, z).color(c, c, c, c).next();
-        tessellator.draw();
+        buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+        //tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
+        meshData.close();
 
         global4fStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
@@ -952,7 +994,10 @@ public class RenderUtils
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
+        //BufferBuilder buffer = tessellator.getBuffer();
+        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        // FIXME MeshData
+        class_9801 meshData;
 
         int a = (int) (color.a * 255f);
         int r = (int) (color.r * 255f);
@@ -960,28 +1005,35 @@ public class RenderUtils
         int b = (int) (color.b * 255f);
         int c = 255;
 
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         // Simple colored quad
-        buffer.vertex(x - 0.5, y - 0.5, z).color(r, g, b, a).next();
-        buffer.vertex(x + 0.5, y - 0.5, z).color(r, g, b, a).next();
-        buffer.vertex(x + 0.5, y + 0.5, z).color(r, g, b, a).next();
-        buffer.vertex(x - 0.5, y + 0.5, z).color(r, g, b, a).next();
+        buffer.vertex((float) (x - 0.5), (float) (y - 0.5), (float) z).color(r, g, b, a);
+        buffer.vertex((float) (x + 0.5), (float) (y - 0.5), (float) z).color(r, g, b, a);
+        buffer.vertex((float) (x + 0.5), (float) (y + 0.5), (float) z).color(r, g, b, a);
+        buffer.vertex((float) (x - 0.5), (float) (y + 0.5), (float) z).color(r, g, b, a);
 
-        tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
+        meshData.close();
+        //tessellator.draw();
 
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
 
-        buffer.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
+        //buffer.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
+        buffer = tessellator.method_60827(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
         // Middle rectangle
-        buffer.vertex(x - 0.375, y - 0.375, z).color(c, c, c, c).next();
-        buffer.vertex(x + 0.375, y - 0.375, z).color(c, c, c, c).next();
-        buffer.vertex(x + 0.375, y + 0.375, z).color(c, c, c, c).next();
-        buffer.vertex(x - 0.375, y + 0.375, z).color(c, c, c, c).next();
+        buffer.vertex((float) (x - 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x + 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x + 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x - 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c);
 
-        tessellator.draw();
+        meshData = buffer.method_60800();
+        BufferRenderer.draw(meshData);
+        meshData.close();
+        //tessellator.draw();
 
         global4fStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
@@ -1050,21 +1102,35 @@ public class RenderUtils
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder buffer = tessellator.getBuffer();
-            buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-            buffer.vertex(x1, y2, z).texture(0.0f, 1.0f).next();
-            buffer.vertex(x2, y2, z).texture(1.0f, 1.0f).next();
-            buffer.vertex(x2, y1, z).texture(1.0f, 0.0f).next();
-            buffer.vertex(x1, y1, z).texture(0.0f, 0.0f).next();
-            tessellator.draw();
+            //BufferBuilder buffer = tessellator.getBuffer();
+            BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+            // FIXME MeshData
+            class_9801 meshData;
+
+            //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+
+            buffer.vertex(x1, y2, z).texture(0.0f, 1.0f);
+            buffer.vertex(x2, y2, z).texture(1.0f, 1.0f);
+            buffer.vertex(x2, y1, z).texture(1.0f, 0.0f);
+            buffer.vertex(x1, y1, z).texture(0.0f, 0.0f);
+
+            //tessellator.draw();
+            meshData = buffer.method_60800();
+            BufferRenderer.draw(meshData);
+            meshData.close();
+
             RenderSystem.disableBlend();
+
+            // FIXME ByteBufferBuilder --> check size ?
+            class_9799 byteBufferBuilder = new class_9799(x * y * z * 2);
 
             if (mapState != null)
             {
                 x1 += 8;
                 y1 += 8;
                 z = 310;
-                VertexConsumerProvider.Immediate consumer = VertexConsumerProvider.immediate(buffer);
+                //VertexConsumerProvider.Immediate consumer = VertexConsumerProvider.immediate(buffer);
+                VertexConsumerProvider.Immediate consumer = VertexConsumerProvider.immediate(byteBufferBuilder);
                 double scale = (double) (dimensions - 16) / 128.0D;
 
                 // TODO -- MapRenderer still uses MatrixStack
@@ -1140,13 +1206,28 @@ public class RenderUtils
         {
             // In 1.13+ there is the uncolored Shulker Box variant, which returns null from getColor()
             final DyeColor dye = block.getColor() != null ? block.getColor() : DyeColor.PURPLE;
-            final float[] colors = dye.getColorComponents();
+            final float[] colors = getColorComponents(dye.getColorComponents());
             color(colors[0], colors[1], colors[2], 1f);
         }
         else
         {
             color(1f, 1f, 1f, 1f);
         }
+    }
+
+    /**
+     * Copied from 1.20.6 DyeColor for compatibility
+     *
+     * @param color (Color int)
+     * @return (float[] of color, old DyeColor method)
+     */
+    public static float[] getColorComponents(int color)
+    {
+        int j = (color & 16711680) >> 16;
+        int k = (color & '\uff00') >> 8;
+        int l = (color & 255) >> 0;
+
+        return new float[]{(float)j / 255.0F, (float)k / 255.0F, (float)l / 255.0F};
     }
 
     public static void renderModelInGui(int x, int y, BakedModel model, BlockState state, float zLevel)
@@ -1202,8 +1283,11 @@ public class RenderUtils
             RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
             RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferbuilder = tessellator.getBuffer();
-            bufferbuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+            //BufferBuilder bufferbuilder = tessellator.getBuffer();
+            BufferBuilder bufferbuilder = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+            //bufferbuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+            // FIXME MeshData
+            class_9801 meshData;
 
             for (Direction face : Direction.values())
             {
@@ -1213,7 +1297,10 @@ public class RenderUtils
 
             RAND.setSeed(0);
             renderQuads(bufferbuilder, model.getQuads(state, null, RAND), state, color);
-            tessellator.draw();
+            meshData = bufferbuilder.method_60800();
+            BufferRenderer.draw(meshData);
+            meshData.close();
+            //tessellator.draw();
         }
 
         matrix4fStack.popMatrix();

@@ -87,7 +87,7 @@ public class ShaderProgram
             return 0;
         }
 
-        final String code = this.loadFile(new Identifier(domain, filename));
+        final String code = this.loadFile(Identifier.method_60655(domain, filename));
 
         if (code == null)
         {

@@ -701,7 +701,7 @@ public class InventoryUtils
 
             if (itemName != null)
             {
-                Identifier itemId = new Identifier(itemName);
+                Identifier itemId = Identifier.tryParse(itemName);
                 Item item = Registries.ITEM.get(itemId);
                 RegistryEntry<Item> itemEntry = RegistryEntry.of(item);
 
