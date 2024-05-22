@@ -174,6 +174,7 @@ public class RenderUtils
         //tessellator.draw();
         meshData = buffer.method_60800();
         BufferRenderer.draw(meshData);
+        meshData.close();
 
         RenderSystem.disableBlend();
     }
@@ -932,6 +933,7 @@ public class RenderUtils
         //tessellator.draw();
         meshData = buffer.method_60800();
         BufferRenderer.draw(meshData);
+        meshData.close();
 
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
