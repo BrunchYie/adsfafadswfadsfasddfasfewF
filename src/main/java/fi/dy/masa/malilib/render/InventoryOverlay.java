@@ -38,22 +38,22 @@ import fi.dy.masa.malilib.gui.GuiBase;
 
 public class InventoryOverlay
 {
-    public static final Identifier TEXTURE_BREWING_STAND    = Identifier.splitOn("minecraft:textures/gui/container/brewing_stand.png", ':');
-    public static final Identifier TEXTURE_DISPENSER        = Identifier.splitOn("minecraft:textures/gui/container/dispenser.png", ':');
-    public static final Identifier TEXTURE_DOUBLE_CHEST     = Identifier.splitOn("minecraft:textures/gui/container/generic_54.png", ':');
-    public static final Identifier TEXTURE_FURNACE          = Identifier.splitOn("minecraft:textures/gui/container/furnace.png", ':');
-    public static final Identifier TEXTURE_HOPPER           = Identifier.splitOn("minecraft:textures/gui/container/hopper.png", ':');
-    public static final Identifier TEXTURE_PLAYER_INV       = Identifier.splitOn("minecraft:textures/gui/container/hopper.png", ':');
-    public static final Identifier TEXTURE_SINGLE_CHEST     = Identifier.splitOn("minecraft:textures/gui/container/shulker_box.png", ':');
+    public static final Identifier TEXTURE_BREWING_STAND    = Identifier.of("minecraft:textures/gui/container/brewing_stand.png");
+    public static final Identifier TEXTURE_DISPENSER        = Identifier.of("minecraft:textures/gui/container/dispenser.png");
+    public static final Identifier TEXTURE_DOUBLE_CHEST     = Identifier.of("minecraft:textures/gui/container/generic_54.png");
+    public static final Identifier TEXTURE_FURNACE          = Identifier.of("minecraft:textures/gui/container/furnace.png");
+    public static final Identifier TEXTURE_HOPPER           = Identifier.of("minecraft:textures/gui/container/hopper.png");
+    public static final Identifier TEXTURE_PLAYER_INV       = Identifier.of("minecraft:textures/gui/container/hopper.png");
+    public static final Identifier TEXTURE_SINGLE_CHEST     = Identifier.of("minecraft:textures/gui/container/shulker_box.png");
 
     private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
     public static final InventoryProperties INV_PROPS_TEMP = new InventoryProperties();
 
     private static final Identifier[] EMPTY_SLOT_TEXTURES = new Identifier[] {
-            Identifier.splitOn("minecraft:item/empty_armor_slot_boots", ':'),
-            Identifier.splitOn("minecraft:item/empty_armor_slot_leggings", ':'),
-            Identifier.splitOn("minecraft:item/empty_armor_slot_chestplate", ':'),
-            Identifier.splitOn("minecraft:item/empty_armor_slot_helmet", ':') };
+            Identifier.of("minecraft:item/empty_armor_slot_boots"),
+            Identifier.of("minecraft:item/empty_armor_slot_leggings"),
+            Identifier.of("minecraft:item/empty_armor_slot_chestplate"),
+            Identifier.of("minecraft:item/empty_armor_slot_helmet") };
 
     public static void renderInventoryBackground(InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, MinecraftClient mc)
     {

@@ -50,8 +50,8 @@ import fi.dy.masa.malilib.util.PositionUtils.HitPart;
 
 public class RenderUtils
 {
-    public static final Identifier TEXTURE_MAP_BACKGROUND = Identifier.splitOn("minecraft:textures/map/map_background.png", ':');
-    public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = Identifier.splitOn("minecraft:textures/map/map_background_checkerboard.png", ':');
+    public static final Identifier TEXTURE_MAP_BACKGROUND = Identifier.of("minecraft:textures/map/map_background.png");
+    public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = Identifier.of("minecraft:textures/map/map_background_checkerboard.png");
 
     private static final LocalRandom RAND = new LocalRandom(0);
     //private static final Vec3d LIGHT0_POS = (new Vec3d( 0.2D, 1.0D, -0.7D)).normalize();
