@@ -526,7 +526,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         buffer.vertex(x + w, y    , z).texture(1, 1);
 
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
         //tessellator.draw();
 
@@ -619,7 +619,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         //tessellator.draw();
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
         RenderSystem.disableBlend();

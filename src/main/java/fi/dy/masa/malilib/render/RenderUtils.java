@@ -8,7 +8,6 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -44,7 +43,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.LocalRandom;
-
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.util.*;
@@ -173,7 +171,7 @@ public class RenderUtils
 
         //tessellator.draw();
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
         RenderSystem.disableBlend();
@@ -200,7 +198,7 @@ public class RenderUtils
 
         //tessellator.draw();
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
     }
 
@@ -327,7 +325,7 @@ public class RenderUtils
 
         //tessellator.draw();
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
         RenderSystem.disableBlend();
@@ -434,7 +432,7 @@ public class RenderUtils
                     posX = (scaledWidth / scale) - width - xOff - bgMargin;
                     break;
                 case CENTER:
-                    posX = (scaledWidth / scale / 2) - (width / 2) - xOff;
+                    posX = (scaledWidth / scale / 2) - ((double) width / 2) - xOff;
                     break;
                 default:
             }
@@ -807,7 +805,7 @@ public class RenderUtils
         buffer.vertex((float) strLenHalf, (float) -1, 0.0F).color(bgr, bgg, bgb, bga);
         //tessellator.draw();
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
         int textY = 0;
@@ -821,7 +819,7 @@ public class RenderUtils
 
         Matrix4f modelMatrix = new Matrix4f();
         // FIXME ByteBufferBuilder --> check size ?
-        class_9799 byteBufferBuilder = new class_9799((int) (x * y * z * 2));
+        class_9799 byteBufferBuilder = new class_9799(RenderLayer.DEFAULT_BUFFER_SIZE);
         modelMatrix.identity();
 
         for (String line : text)
@@ -932,7 +930,7 @@ public class RenderUtils
 
         //tessellator.draw();
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
         // FIXME: line width doesn't work currently
@@ -949,7 +947,7 @@ public class RenderUtils
         buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
         //tessellator.draw();
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
         //buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
@@ -971,7 +969,7 @@ public class RenderUtils
         buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
         //tessellator.draw();
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
         global4fStack.popMatrix();
@@ -1016,7 +1014,7 @@ public class RenderUtils
         buffer.vertex((float) (x - 0.5), (float) (y + 0.5), (float) z).color(r, g, b, a);
 
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
         //tessellator.draw();
 
@@ -1033,7 +1031,7 @@ public class RenderUtils
         buffer.vertex((float) (x - 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c);
 
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
         //tessellator.draw();
 
@@ -1118,13 +1116,13 @@ public class RenderUtils
 
             //tessellator.draw();
             meshData = buffer.method_60800();
-            BufferRenderer.draw(meshData);
+            BufferRenderer.drawWithGlobalProgram(meshData);
             meshData.close();
 
             RenderSystem.disableBlend();
 
             // FIXME ByteBufferBuilder --> check size ?
-            class_9799 byteBufferBuilder = new class_9799(x * y * z * 2);
+            class_9799 byteBufferBuilder = new class_9799(RenderLayer.DEFAULT_BUFFER_SIZE);
 
             if (mapState != null)
             {
@@ -1300,7 +1298,7 @@ public class RenderUtils
             RAND.setSeed(0);
             renderQuads(bufferbuilder, model.getQuads(state, null, RAND), state, color);
             meshData = bufferbuilder.method_60800();
-            BufferRenderer.draw(meshData);
+            BufferRenderer.drawWithGlobalProgram(meshData);
             meshData.close();
             //tessellator.draw();
         }

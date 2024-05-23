@@ -156,7 +156,7 @@ public class InventoryOverlay
 
         //tessellator.draw();
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
     }
 
@@ -212,7 +212,7 @@ public class InventoryOverlay
 
         //tessellator.draw();
         meshData = buffer.method_60800();
-        BufferRenderer.draw(meshData);
+        BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
         RenderUtils.bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
