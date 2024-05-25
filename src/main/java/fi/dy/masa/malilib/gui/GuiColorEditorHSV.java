@@ -4,7 +4,6 @@ import java.awt.Color;
 import javax.annotation.Nullable;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.class_9801;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
@@ -502,9 +501,9 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         Tessellator tessellator = Tessellator.getInstance();
         //BufferBuilder buffer = tessellator.getBuffer();
-        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         // FIXME MeshData
-        class_9801 meshData;
+        BuiltBuffer meshData;
 
         RenderUtils.setupBlend();
 
@@ -514,7 +513,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         //GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
 
         //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        //class_9801 mesh = buffer.method_60794();
+        //BuiltBuffer mesh = buffer.method_60794();
 
         //buffer.vertex(x    , y    , z).texture(1, 0).next();
         //buffer.vertex(x    , y + h, z).texture(0, 0).next();
@@ -525,14 +524,14 @@ public class GuiColorEditorHSV extends GuiDialogBase
         buffer.vertex(x + w, y + h, z).texture(0, 1);
         buffer.vertex(x + w, y    , z).texture(1, 1);
 
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
         //tessellator.draw();
 
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         int r = (int) (this.relR * 255f);
         int g = (int) (this.relG * 255f);
@@ -618,7 +617,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         y += yd;
 
         //tessellator.draw();
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 

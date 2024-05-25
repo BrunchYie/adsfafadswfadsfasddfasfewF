@@ -15,7 +15,6 @@ import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.class_9801;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.item.TooltipType;
@@ -60,9 +59,9 @@ public class InventoryOverlay
         RenderUtils.setupBlend();
         Tessellator tessellator = Tessellator.getInstance();
         //BufferBuilder buffer = tessellator.getBuffer();
-        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         // FIXME MeshData
-        class_9801 meshData;
+        BuiltBuffer meshData;
 
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.applyModelViewMatrix();
@@ -155,7 +154,7 @@ public class InventoryOverlay
         RenderSystem.enableBlend();
 
         //tessellator.draw();
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
     }
@@ -186,9 +185,9 @@ public class InventoryOverlay
 
         Tessellator tessellator = Tessellator.getInstance();
         //BufferBuilder buffer = tessellator.getBuffer();
-        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         // FIXME MeshData
-        class_9801 meshData;
+        BuiltBuffer meshData;
 
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.applyModelViewMatrix();
@@ -211,7 +210,7 @@ public class InventoryOverlay
         RenderUtils.drawTexturedRectBatched(x + 28, y + 3 * 18 + 7, 61, 16, 18, 18, buffer);
 
         //tessellator.draw();
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 

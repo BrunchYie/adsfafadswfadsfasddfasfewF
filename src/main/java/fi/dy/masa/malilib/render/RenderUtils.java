@@ -12,8 +12,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.class_9799;
-import net.minecraft.class_9801;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -21,6 +19,7 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
@@ -156,9 +155,9 @@ public class RenderUtils
         RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
         //BufferBuilder buffer = tessellator.getBuffer();
-        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         // FIXME MeshData
-        class_9801 meshData;
+        BuiltBuffer meshData;
 
         setupBlend();
 
@@ -170,7 +169,7 @@ public class RenderUtils
         buffer.vertex(x + width, y         , zLevel).color(r, g, b, a);
 
         //tessellator.draw();
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
@@ -184,9 +183,9 @@ public class RenderUtils
         RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
         //BufferBuilder buffer = tessellator.getBuffer();
-        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         // FIXME MeshData
-        class_9801 meshData;
+        BuiltBuffer meshData;
 
         setupBlend();
         //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
@@ -197,7 +196,7 @@ public class RenderUtils
         buffer.vertex(x        , y         , zLevel).texture( u          * pixelWidth,  v           * pixelWidth);
 
         //tessellator.draw();
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
     }
@@ -313,10 +312,10 @@ public class RenderUtils
 
         Tessellator tessellator = Tessellator.getInstance();
         //BufferBuilder buffer = tessellator.getBuffer();
-        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         // FIXME MeshData
-        class_9801 meshData;
+        BuiltBuffer meshData;
         
         buffer.vertex(right, top, zLevel).color(sr, sg, sb, sa);
         buffer.vertex(left, top, zLevel).color(sr, sg, sb, sa);
@@ -324,7 +323,7 @@ public class RenderUtils
         buffer.vertex(right, bottom, zLevel).color(er, eg, eb, ea);
 
         //tessellator.draw();
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
@@ -775,9 +774,9 @@ public class RenderUtils
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Tessellator tessellator = Tessellator.getInstance();
         //BufferBuilder buffer = tessellator.getBuffer();
-        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         // FIXME MeshData
-        class_9801 meshData;
+        BuiltBuffer meshData;
         int maxLineLen = 0;
 
         for (String line : text)
@@ -804,7 +803,7 @@ public class RenderUtils
         buffer.vertex((float) strLenHalf, (float) textHeight, 0.0F).color(bgr, bgg, bgb, bga);
         buffer.vertex((float) strLenHalf, (float) -1, 0.0F).color(bgr, bgg, bgb, bga);
         //tessellator.draw();
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
@@ -819,7 +818,7 @@ public class RenderUtils
 
         Matrix4f modelMatrix = new Matrix4f();
         // FIXME ByteBufferBuilder --> check size ?
-        class_9799 byteBufferBuilder = new class_9799(RenderLayer.DEFAULT_BUFFER_SIZE);
+        BufferAllocator byteBufferBuilder = new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE);
         modelMatrix.identity();
 
         for (String line : text)
@@ -875,9 +874,9 @@ public class RenderUtils
 
         Tessellator tessellator = Tessellator.getInstance();
         //BufferBuilder buffer = tessellator.getBuffer();
-        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         // FIXME MeshData
-        class_9801 meshData;
+        BuiltBuffer meshData;
         int quadAlpha = (int) (0.18f * 255f);
         int hr = (int) (color.r * 255f);
         int hg = (int) (color.g * 255f);
@@ -929,7 +928,7 @@ public class RenderUtils
         }
 
         //tessellator.draw();
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
@@ -937,7 +936,7 @@ public class RenderUtils
         RenderSystem.lineWidth(1.6f);
 
         //buffer.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
-        buffer = tessellator.method_60827(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
+        buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
         // Middle small rectangle
         buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
@@ -946,12 +945,12 @@ public class RenderUtils
         buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
         buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
         //tessellator.draw();
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
         //buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-        buffer = tessellator.method_60827(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         // Bottom left
         buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c);
         buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
@@ -968,7 +967,7 @@ public class RenderUtils
         buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c);
         buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
         //tessellator.draw();
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
 
@@ -995,9 +994,9 @@ public class RenderUtils
 
         Tessellator tessellator = Tessellator.getInstance();
         //BufferBuilder buffer = tessellator.getBuffer();
-        BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         // FIXME MeshData
-        class_9801 meshData;
+        BuiltBuffer meshData;
 
         int a = (int) (color.a * 255f);
         int r = (int) (color.r * 255f);
@@ -1013,7 +1012,7 @@ public class RenderUtils
         buffer.vertex((float) (x + 0.5), (float) (y + 0.5), (float) z).color(r, g, b, a);
         buffer.vertex((float) (x - 0.5), (float) (y + 0.5), (float) z).color(r, g, b, a);
 
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
         //tessellator.draw();
@@ -1022,7 +1021,7 @@ public class RenderUtils
         RenderSystem.lineWidth(1.6f);
 
         //buffer.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
-        buffer = tessellator.method_60827(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
+        buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
         // Middle rectangle
         buffer.vertex((float) (x - 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c);
@@ -1030,7 +1029,7 @@ public class RenderUtils
         buffer.vertex((float) (x + 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c);
         buffer.vertex((float) (x - 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c);
 
-        meshData = buffer.method_60800();
+        meshData = buffer.end();
         BufferRenderer.drawWithGlobalProgram(meshData);
         meshData.close();
         //tessellator.draw();
@@ -1103,9 +1102,9 @@ public class RenderUtils
             RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
             //BufferBuilder buffer = tessellator.getBuffer();
-            BufferBuilder buffer = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+            BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
             // FIXME MeshData
-            class_9801 meshData;
+            BuiltBuffer meshData;
 
             //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
@@ -1115,14 +1114,14 @@ public class RenderUtils
             buffer.vertex(x1, y1, z).texture(0.0f, 0.0f);
 
             //tessellator.draw();
-            meshData = buffer.method_60800();
+            meshData = buffer.end();
             BufferRenderer.drawWithGlobalProgram(meshData);
             meshData.close();
 
             RenderSystem.disableBlend();
 
             // FIXME ByteBufferBuilder --> check size ?
-            class_9799 byteBufferBuilder = new class_9799(RenderLayer.DEFAULT_BUFFER_SIZE);
+            BufferAllocator byteBufferBuilder = new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE);
 
             if (mapState != null)
             {
@@ -1284,10 +1283,10 @@ public class RenderUtils
             RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
             //BufferBuilder bufferbuilder = tessellator.getBuffer();
-            BufferBuilder bufferbuilder = tessellator.method_60827(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+            BufferBuilder bufferbuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
             //bufferbuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
             // FIXME MeshData
-            class_9801 meshData;
+            BuiltBuffer meshData;
 
             for (Direction face : Direction.values())
             {
@@ -1297,7 +1296,7 @@ public class RenderUtils
 
             RAND.setSeed(0);
             renderQuads(bufferbuilder, model.getQuads(state, null, RAND), state, color);
-            meshData = bufferbuilder.method_60800();
+            meshData = bufferbuilder.end();
             BufferRenderer.drawWithGlobalProgram(meshData);
             meshData.close();
             //tessellator.draw();
