@@ -500,10 +500,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF, z); // Hue vertical/full value
 
         Tessellator tessellator = Tessellator.getInstance();
-        //BufferBuilder buffer = tessellator.getBuffer();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        // FIXME MeshData
-        BuiltBuffer meshData;
+        BuiltBuffer builtBuffer;
 
         RenderUtils.setupBlend();
 
@@ -512,25 +510,20 @@ public class GuiColorEditorHSV extends GuiDialogBase
         //GlProgramManager.useProgram(SHADER_HUE.getProgram());
         //GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
 
-        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        //BuiltBuffer mesh = buffer.method_60794();
-
-        //buffer.vertex(x    , y    , z).texture(1, 0).next();
-        //buffer.vertex(x    , y + h, z).texture(0, 0).next();
-        //buffer.vertex(x + w, y + h, z).texture(0, 1).next();
-        //buffer.vertex(x + w, y    , z).texture(1, 1).next();
         buffer.vertex(x    , y    , z).texture(1, 0);
         buffer.vertex(x    , y + h, z).texture(0, 0);
         buffer.vertex(x + w, y + h, z).texture(0, 1);
         buffer.vertex(x + w, y    , z).texture(1, 1);
 
-        meshData = buffer.end();
-        BufferRenderer.drawWithGlobalProgram(meshData);
-        meshData.close();
-        //tessellator.draw();
+        try
+        {
+            builtBuffer = buffer.end();
+            BufferRenderer.drawWithGlobalProgram(builtBuffer);
+            builtBuffer.close();
+        }
+        catch (Exception ignored) { }
 
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         int r = (int) (this.relR * 255f);
@@ -616,10 +609,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
         renderBarMarkerHorizontalBar(x, y, z, w, h, (float) a / 255f, buffer);
         y += yd;
 
-        //tessellator.draw();
-        meshData = buffer.end();
-        BufferRenderer.drawWithGlobalProgram(meshData);
-        meshData.close();
+        try
+        {
+            builtBuffer = buffer.end();
+            BufferRenderer.drawWithGlobalProgram(builtBuffer);
+            builtBuffer.close();
+        }
+        catch (Exception ignored) { }
 
         RenderSystem.disableBlend();
     }

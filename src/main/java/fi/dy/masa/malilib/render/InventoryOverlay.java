@@ -59,7 +59,7 @@ public class InventoryOverlay
         RenderUtils.setupBlend();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        BuiltBuffer meshData;
+        BuiltBuffer builtBuffer;
 
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.applyModelViewMatrix();
@@ -150,9 +150,13 @@ public class InventoryOverlay
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
 
-        meshData = buffer.end();
-        BufferRenderer.drawWithGlobalProgram(meshData);
-        meshData.close();
+        try
+        {
+            builtBuffer = buffer.end();
+            BufferRenderer.drawWithGlobalProgram(builtBuffer);
+            builtBuffer.close();
+        }
+        catch (Exception ignored) { }
     }
 
     public static void renderInventoryBackground27(int x, int y, BufferBuilder buffer, MinecraftClient mc)
@@ -181,11 +185,10 @@ public class InventoryOverlay
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        BuiltBuffer meshData;
+        BuiltBuffer builtBuffer;
 
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.applyModelViewMatrix();
-        //buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
         RenderUtils.bindTexture(TEXTURE_DISPENSER);
 
@@ -203,9 +206,13 @@ public class InventoryOverlay
         RenderUtils.drawTexturedRectBatched(x + 28, y + 2 * 18 + 7, 61, 16, 18, 18, buffer);
         RenderUtils.drawTexturedRectBatched(x + 28, y + 3 * 18 + 7, 61, 16, 18, 18, buffer);
 
-        meshData = buffer.end();
-        BufferRenderer.drawWithGlobalProgram(meshData);
-        meshData.close();
+        try
+        {
+            builtBuffer = buffer.end();
+            BufferRenderer.drawWithGlobalProgram(builtBuffer);
+            builtBuffer.close();
+        }
+        catch (Exception ignored) { }
 
         RenderUtils.bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
 
