@@ -56,7 +56,6 @@ public class RenderEventHandler implements IRenderDispatcher
      */
     public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks)
     {
-        // FIXME
         mc.getProfiler().push("malilib_rendergameoverlaypost");
 
         if (this.overlayRenderers.isEmpty() == false)
