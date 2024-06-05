@@ -5,7 +5,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
-import fi.dy.masa.malilib.util.InfoUtils;
 
 public class GuiTextFieldGeneric extends TextFieldWidget
 {
@@ -75,35 +74,6 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     {
         return mouseX >= this.x && mouseX < this.x + this.width &&
                mouseY >= this.y && mouseY < this.y + this.height;
-    }
-
-    // Don't call this method, call the vanilla method directly
-    @Deprecated
-    public int getCursorPosition()
-    {
-        InfoUtils.showGuiOrInGameMessage(Message.MessageType.WARNING, "malilib 0.18.2 deprecated the getCursorPosition() method. Update the mod that owns the GUI where this warning happens to the latest version.");
-        return 0;
-    }
-
-    // Don't call this method, call the vanilla method directly
-    @Deprecated
-    public void setCursorPosition(int pos)
-    {
-        InfoUtils.showGuiOrInGameMessage(Message.MessageType.WARNING, "malilib 0.18.2 deprecated the setCursorPosition() method. Update the mod that owns the GUI where this warning happens to the latest version.");
-    }
-
-    // Don't call this method, call the vanilla method directly
-    @Deprecated
-    public void setCursorPositionZero()
-    {
-        InfoUtils.showGuiOrInGameMessage(Message.MessageType.WARNING, "malilib 0.18.2 deprecated the setCursorPositionZero() method. Update the mod that owns the GUI where this warning happens to the latest version.");
-    }
-
-    // Don't call this method, call the vanilla method directly
-    @Deprecated
-    public void setCursorPositionEnd()
-    {
-        InfoUtils.showGuiOrInGameMessage(Message.MessageType.WARNING, "malilib 0.18.2 deprecated the setCursorPositionEnd() method. Update the mod that owns the GUI where this warning happens to the latest version.");
     }
 
     public GuiTextFieldGeneric setZLevel(int zLevel)
