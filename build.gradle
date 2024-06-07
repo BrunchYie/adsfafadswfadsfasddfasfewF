@@ -9,10 +9,10 @@ targetCompatibility = JavaVersion.VERSION_21
 repositories {
 	maven {
 		url 'https://maven.terraformersmc.com/releases/'
-		mavenLocal()
 	}
-	flatDir { dirs 'libs' }
+	//flatDir { dirs 'libs' }
 	// maven { url 'https://maven.quiltmc.org/repository/release/' }
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
