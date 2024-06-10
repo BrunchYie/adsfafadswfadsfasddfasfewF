@@ -69,11 +69,11 @@ public class PayloadSplitter
     }
 
     @ApiStatus.Experimental
-    public static <T extends CustomPayload> void receive(IPluginClientPlayHandler<T> handler,
-                                                         PacketByteBuf buf,
-                                                         ClientPlayNetworkHandler networkHandler)
+    public static <T extends CustomPayload> PacketByteBuf receive(IPluginClientPlayHandler<T> handler,
+                                                                  PacketByteBuf buf,
+                                                                  ClientPlayNetworkHandler networkHandler)
     {
-        handler.decodeWithSplitter(networkHandler, receive(handler.getPayloadChannel(), buf, DEFAULT_MAX_RECEIVE_SIZE_S2C, networkHandler));
+        return receive(handler.getPayloadChannel(), buf, DEFAULT_MAX_RECEIVE_SIZE_S2C, networkHandler);
     }
 
     @Nullable
