@@ -34,12 +34,15 @@ public interface IClientPayloadData
 
     /**
      * PacketByteBuf Decoder -- How this Data is converted FROM a PacketByteBuf
+     * [NOTE]: In order for this to work, it needs to call a static version of this.
+     * This version is only for guidance.
+     * -
      * @param input (Incoming Packet)
      * @return (A new instance of the implementation class)
      * @param <T> (The implementation class)
      */
     @Nullable
-    <T extends IClientPayloadData> T fromPacket(PacketByteBuf input);
+    static <T extends IClientPayloadData> T fromPacket(PacketByteBuf input) { return null; }
 
     /**
      * PacketByteBuf Encoder -- How this Data is converted TO a PacketByteBuf
