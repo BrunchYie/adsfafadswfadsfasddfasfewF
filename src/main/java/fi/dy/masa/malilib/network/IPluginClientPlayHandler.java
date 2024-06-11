@@ -174,17 +174,10 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
     default <D> void encodeObject(D data1) {}
 
     /**
-     * Used as an iterative "wrapper" for Payload Splitter to receive a packet with
-     * @param handler (networkHandler only used with Reading Session)
-     * @param buf (Buffer to receive)
-     */
-    default void decodeWithSplitter(ClientPlayNetworkHandler handler, PacketByteBuf buf) {}
-
-    /**
      * Used as an iterative "wrapper" for Payload Splitter to send individual Packets
      * @param buf (Sliced Buffer to send)
      */
-    default void encodeWithSplitter(PacketByteBuf buf) {}
+    void encodeWithSplitter(PacketByteBuf buf, ClientPlayNetworkHandler handler);
 
     /**
      * Sends the Payload to the server using the Fabric-API interface.

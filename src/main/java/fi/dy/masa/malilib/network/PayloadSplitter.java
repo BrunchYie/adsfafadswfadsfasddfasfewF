@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import io.netty.buffer.Unpooled;
-import org.jetbrains.annotations.ApiStatus;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -18,7 +17,6 @@ import net.minecraft.util.Pair;
  * @author skyrising
  *
  */
-@ApiStatus.Experimental
 public class PayloadSplitter
 {
     public static final int MAX_TOTAL_PER_PACKET_S2C = 1048576;
@@ -30,16 +28,12 @@ public class PayloadSplitter
 
     private static final Map<Pair<PacketListener, Identifier>, ReadingSession> READING_SESSIONS = new HashMap<>();
 
-    @ApiStatus.Experimental
-    public static <T extends CustomPayload> boolean send(IPluginClientPlayHandler<T> handler, Identifier channel, PacketByteBuf packet)
+    public static <T extends CustomPayload> boolean send(IPluginClientPlayHandler<T> handler, PacketByteBuf packet, ClientPlayNetworkHandler networkHandler)
     {
-        //ClientPlayNetworking.send(channel, packet);
-        //send(packet, MAX_PAYLOAD_PER_PACKET_C2S, buf -> networkHandler.sendPacket(new CustomPayloadC2SPacket(new PacketByteBufPayload(channel, buf))));
-        return send(handler, packet, MAX_PAYLOAD_PER_PACKET_C2S);
+        return send(handler, packet, MAX_PAYLOAD_PER_PACKET_C2S, networkHandler);
     }
 
-    @ApiStatus.Experimental
-    private static <T extends CustomPayload> boolean send(IPluginClientPlayHandler<T> handler, PacketByteBuf packet, int payloadLimit)
+    private static <T extends CustomPayload> boolean send(IPluginClientPlayHandler<T> handler, PacketByteBuf packet, int payloadLimit, ClientPlayNetworkHandler networkHandler)
     {
         int len = packet.writerIndex();
 
@@ -58,7 +52,7 @@ public class PayloadSplitter
             }
 
             buf.writeBytes(packet, thisLen);
-            handler.encodeWithSplitter(buf);
+            handler.encodeWithSplitter(buf, networkHandler);
         }
 
         packet.release();
@@ -66,7 +60,6 @@ public class PayloadSplitter
         return true;
     }
 
-    @ApiStatus.Experimental
     public static <T extends CustomPayload> PacketByteBuf receive(IPluginClientPlayHandler<T> handler,
                                                                   PacketByteBuf buf,
                                                                   ClientPlayNetworkHandler networkHandler)
@@ -75,7 +68,6 @@ public class PayloadSplitter
     }
 
     @Nullable
-    @ApiStatus.Experimental
     private static PacketByteBuf receive(Identifier channel,
                                          PacketByteBuf buf,
                                          int maxLength,
@@ -86,7 +78,6 @@ public class PayloadSplitter
         return READING_SESSIONS.computeIfAbsent(key, ReadingSession::new).receive(readPayload(buf), maxLength);
     }
 
-    @ApiStatus.Experimental
     public static PacketByteBuf readPayload(PacketByteBuf byteBuf)
     {
         PacketByteBuf newBuf = new PacketByteBuf(Unpooled.buffer());
@@ -95,21 +86,18 @@ public class PayloadSplitter
         return newBuf;
     }
 
-    @ApiStatus.Experimental
     private static class ReadingSession
     {
         private final Pair<PacketListener, Identifier> key;
         private int expectedSize = -1;
         private PacketByteBuf received;
 
-        @ApiStatus.Experimental
         private ReadingSession(Pair<PacketListener, Identifier> key)
         {
             this.key = key;
         }
 
         @Nullable
-        @ApiStatus.Experimental
         private PacketByteBuf receive(PacketByteBuf data, int maxLength)
         {
             if (this.expectedSize < 0)
