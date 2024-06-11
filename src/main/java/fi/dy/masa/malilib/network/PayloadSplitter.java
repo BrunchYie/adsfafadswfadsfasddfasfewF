@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.listener.PacketListener;
@@ -84,6 +85,18 @@ public class PayloadSplitter
         newBuf.writeBytes(byteBuf.copy());
         byteBuf.skipBytes(byteBuf.readableBytes());
         return newBuf;
+    }
+
+    /**
+     * Sends a packet type ID as a VarInt, and then the given Compound tag.
+     */
+    public static <T extends CustomPayload> void sendPacketTypeAndCompound(IPluginClientPlayHandler<T> handler, int packetType, NbtCompound data, ClientPlayNetworkHandler networkHandler)
+    {
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeVarInt(packetType);
+        buf.writeNbt(data);
+
+        send(handler, buf, networkHandler);
     }
 
     private static class ReadingSession
