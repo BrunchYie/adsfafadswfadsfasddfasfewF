@@ -2,7 +2,6 @@ package fi.dy.masa.malilib.network;
 
 import com.google.common.collect.ArrayListMultimap;
 import org.jetbrains.annotations.ApiStatus;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 

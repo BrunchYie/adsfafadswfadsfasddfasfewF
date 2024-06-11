@@ -176,6 +176,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
     /**
      * Used as an iterative "wrapper" for Payload Splitter to send individual Packets
      * @param buf (Sliced Buffer to send)
+     * @param handler (Network Handler as a fail-over option)
      */
     void encodeWithSplitter(PacketByteBuf buf, ClientPlayNetworkHandler handler);
 
