@@ -14,8 +14,6 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import fi.dy.masa.malilib.MaLiLib;
 
@@ -175,7 +173,6 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
     default void encodeByteBuf(MaLiLibBuf data) {}
     default <D> void encodeObject(D data1) {}
 
-    // UNSTABLE TESTING ONLY -- DO NOT USE
     /**
      * Used as an iterative "wrapper" for Payload Splitter to receive a packet with
      * @param handler (networkHandler only used with Reading Session)
@@ -183,13 +180,11 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      */
     default void decodeWithSplitter(ClientPlayNetworkHandler handler, PacketByteBuf buf) {}
 
-    // UNSTABLE TESTING ONLY -- DO NOT USE
     /**
      * Used as an iterative "wrapper" for Payload Splitter to send individual Packets
      * @param buf (Sliced Buffer to send)
      */
     default void encodeWithSplitter(PacketByteBuf buf) {}
-    // UNSTABLE TESTING ONLY -- DO NOT USE
 
     /**
      * Sends the Payload to the server using the Fabric-API interface.

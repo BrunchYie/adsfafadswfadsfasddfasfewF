@@ -58,8 +58,6 @@ public class PayloadSplitter
             }
 
             buf.writeBytes(packet, thisLen);
-
-            //ClientPlayNetworking.send(channel, buf);
             handler.encodeWithSplitter(buf);
         }
 
