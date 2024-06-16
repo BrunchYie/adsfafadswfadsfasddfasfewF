@@ -1,12 +1,11 @@
 package fi.dy.masa.malilib.event;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.registry.DynamicRegistryManager;
-import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.interfaces.IWorldLoadListener;
 
@@ -57,8 +56,6 @@ public class WorldLoadHandler implements IWorldLoadManager
      */
     public void onWorldLoadImmutable(DynamicRegistryManager.Immutable immutable)
     {
-        MaLiLib.printDebug("WorldLoadHandler#onWorldLoadImmutable(): Captured Immutable DynamicRegistryManager from SaveLoader");
-
         if (this.worldLoadPreHandlers.isEmpty() == false)
         {
             for (IWorldLoadListener listener : this.worldLoadPreHandlers)
